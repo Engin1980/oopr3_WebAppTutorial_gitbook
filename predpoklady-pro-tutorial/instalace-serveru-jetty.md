@@ -12,6 +12,8 @@ Server stáhneme z webových stránek výrobce [https://www.eclipse.org/jetty/do
 
 ![](../.gitbook/assets/pre_jetty_download.jpg)
 
+## 2 Vložení do prostředí Idea
+
 Spustíme prostředí Idea. Otevřeme nastavení přes menu "File =&gt; Settings". Najdeme položku "Build, Execution, Deployment =&gt; Application Servers".
 
 V otevřené nabíce zvolíme "+", vybereme "Jetty server" a vložíme cestu ke složce se serverem \(viz výše\). 
