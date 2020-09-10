@@ -125,7 +125,7 @@ Podle zadaných hodnot se mění hodnota pole `URL`. Toto pole se používá pro
 Protože pro první připojení databáze nejspíš neexistuje, do url dopíšeme ručně `;create=true`. Tento příkaz se postará o to, aby se při prvním připojení databáze vytvořila, pokud ještě neexistuje. Po úspěšném připojení lze tento dodatek smazat.
 {% endhint %}
 
-{% hint style="info" %}
+{% hint style="warning" %}
 Volba jména a hesla je důležitá. V případě ztráty jména či hesla je typicky nemožné vygenerovat jméno či heslo nové a přístup k databázi je tak ztracen!
 {% endhint %}
 
