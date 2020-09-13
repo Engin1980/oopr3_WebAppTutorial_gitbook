@@ -107,7 +107,11 @@ Připojením knihovny "EclipseLink JPA" se zároveň v projektu aktivuje podpora
 Pokud by se tak nestalo, nebo bychom chtěli podporu perzistence aktivovat v projektu ručně, využijeme opět kontextové menu nad projektem "Books =&gt; Add Framework Support" a vybereme "JPA Persistence".
 {% endhint %}
 
-### 2.3 Nastavení persistence ve webovém projektu
+### 2.3 Připojení knihoven do výsledného artefaktu
+
+
+
+### 2.4 Nastavení persistence ve webovém projektu
 
 Prvním krokem je aktivace modulu persistence ve webovém projektu, která však již proběhla na konci předchozího bodu. Že je modul aktivován se pozná podle menu "Persistence" v levém svislém sloupci prostředí Idea. Klikem na tuto záložku se otevře podokno Persistence, kde je uvedeno \(zatím prázdné\) nastavení persistence v projektu.
 
@@ -135,4 +139,6 @@ Následně dialog potvrdíme. Po potvrzení, zda chceme opravdu provést generov
 
 * v okně Persistence objeví informace o entitě BookEntity,
 * ve složce `src/main/java/cz.osu.books.db.entities`objeví soubor s třídou BookEntity.
+
+... dopsat nahoře 2.3, už nemůžu
 
