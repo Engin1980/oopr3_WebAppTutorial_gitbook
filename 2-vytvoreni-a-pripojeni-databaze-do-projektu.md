@@ -109,7 +109,9 @@ Pokud by se tak nestalo, nebo bychom chtěli podporu perzistence aktivovat v pro
 
 ### 2.3 Připojení knihoven do výsledného artefaktu
 
-
+{% hint style="warning" %}
+Problematika v této pasáži je platná obecně a nemusí se vztahovat jen k problematice připojení k databázi, ale je platná pro libovolnou knihovnu, která je přiložena do projektu.
+{% endhint %}
 
 ### 2.4 Nastavení persistence ve webovém projektu
 
