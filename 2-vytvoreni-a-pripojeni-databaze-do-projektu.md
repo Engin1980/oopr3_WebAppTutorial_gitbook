@@ -107,7 +107,32 @@ Připojením knihovny "EclipseLink JPA" se zároveň v projektu aktivuje podpora
 Pokud by se tak nestalo, nebo bychom chtěli podporu perzistence aktivovat v projektu ručně, využijeme opět kontextové menu nad projektem "Books =&gt; Add Framework Support" a vybereme "JPA Persistence".
 {% endhint %}
 
-### 2.3 Aktivace persistence ve webovém projektu
+### 2.3 Nastavení persistence ve webovém projektu
 
+Prvním krokem je aktivace modulu persistence ve webovém projektu, která však již proběhla na konci předchozího bodu. Že je modul aktivován se pozná podle menu "Persistence" v levém svislém sloupci prostředí Idea. Klikem na tuto záložku se otevře podokno Persistence, kde je uvedeno \(zatím prázdné\) nastavení persistence v projektu.
 
+![](.gitbook/assets/2-persistence-empty.jpg)
+
+{% hint style="info" %}
+Do okna persistence se lze také dostat přes menu "View =&gt; Tool Windows =&gt; Persistence".
+{% endhint %}
+
+Dalším krokem bude vytvoření tzv "entit" - tříd, které reprezentují záznamy databázových tabulek. V našem případě potřebujeme entitu pro tabulku "Book". Entity si můžeme napsat sami ručně, nebo si je nechat vygenerovat. Pro generování zvolíme v okně Persistence nad libovolnou položkou kontextové menu a vybereme "Generate Persistence Mapping =&gt; By Database Schema".
+
+![](.gitbook/assets/2-persistence-generate-open.jpg)
+
+V otevřeném dialogovém okně nastavujeme, jak a dle čeho se mají entity generovat. Nastavíme:
+
+* Choose Data Source - vybereme datový zdroj pro připojení do databáze. Tento datový zdroj musí být zavedený v prostředí idea \(v Idea vpravo v záložce "Database"\).
+* Package - název balíčku, do kterého se budou entity/třídy generovat. Například `cz.osu.books.db.entities`.
+* Entity prefix/suffix udává před/příponu, která se bude přidávat před/za název třídy odvozené z názvu tabulky. Naše tabulka `Books`bude tedy reprezentována třídou `BooksEntity`.
+* V "Database Schema Mapping" zaškrteneme požadované tabulky - po nás tedy tabulku "Books".
+* Dole necháme ještě zaškrtnutou položku "Generate JPA Annotations" - v dřívějších verzích Javy se potřebné anotace \(tj. informace co odkud z DB se načítá ze které tabulky/sloupce\) ukládalo do externího XML souboru. Aktuálně je vhodnější mít tyto anotace přímo v kódu třídy.
+
+![](.gitbook/assets/2-persistence-generate-set.jpg)
+
+Následně dialog potvrdíme. Po potvrzení, zda chceme opravdu provést generování se nás Idea ještě může zeptat, zda chceme třídy uložit do sekce "src/main" - zdrojové kódy, nebo "src/test" pro testování. Vybíráme `src/main/...`. Po potvrzení se:
+
+* v okně Persistence objeví informace o entitě BookEntity,
+* ve složce `src/main/java/cz.osu.books.db.entities`objeví soubor s třídou BookEntity.
 
