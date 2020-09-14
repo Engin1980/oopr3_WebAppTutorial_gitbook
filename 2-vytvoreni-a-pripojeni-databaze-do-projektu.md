@@ -311,11 +311,7 @@ Výsledný upravený soubor tedy bude vypadat například takto:
 ```
 {% endcode %}
 
-Nyní je vhodné opět ověřit parciální funkcionalitu řešení.
+Nyní je vhodné opět ověřit parciální funkcionalitu řešení. Projekt spustíme \(`index.jsp` ponecháme beze změny od předchozího příkladu\). Mělo by se otevřít nové okno webového prohlížeče naší aplikace, které bude prázdné, tentokráte tedy již bez chyb. To značí, že se naše webová aplikace úspěšně připojila do databáze a můžeme začít realizovat databázové operace.
 
-* 
-| Atribut | Hodnota | Popis |
-| :--- | :--- | :--- |
-| eclipselink.jdbc.url | jdbc:derby://&lt;server&gt;/&lt;databáze&gt; | Adresa serveru, případně port |
-| eclipselink.jdbc.driver |  |  |
+
 
