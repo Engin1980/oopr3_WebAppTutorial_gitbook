@@ -58,15 +58,22 @@ Pro připojení do databáze budeme ve webovém projektu využívat knihovn Ecli
 
 Nejdříve připojíme ovladač databáze - ten je nutný, aby se aplikace uměla s databází domluvit:
 
-1. Otevřeme web Maven Repository \([https://mvnrepository.com/](https://mvnrepository.com/)\) a necháme vyhledat "Apache Derby":
+1. Otevřeme web Maven Repository \([https://mvnrepository.com/](https://mvnrepository.com/)\) a necháme vyhledat "Apache Derby JDBC":
 2. Vybereme položku "Apache Derby Client JDBC Driver" \([https://mvnrepository.com/artifact/org.apache.derby/derbyclient](https://mvnrepository.com/artifact/org.apache.derby/derbyclient)\) a požadovanou verzi podle databáze.
-3. Zkopírujeme a přidáme do  `pom.xml` do bloku `<dependencies>` požadovanou knihovnu:
+3. Zkopírujeme a přidáme do  `pom.xml` do bloku `<dependencies>` požadovanou knihovnu. Stejný postup opakujeme pro "Apache Derby Tools". Výsledný vkládaný obsah:
 
 ```markup
 <!-- https://mvnrepository.com/artifact/org.apache.derby/derbyclient -->
 <dependency>
     <groupId>org.apache.derby</groupId>
     <artifactId>derbyclient</artifactId>
+    <version>10.15.2.0</version>
+</dependency>
+
+<!-- https://mvnrepository.com/artifact/org.apache.derby/derbytools -->
+<dependency>
+    <groupId>org.apache.derby</groupId>
+    <artifactId>derbytools</artifactId>
     <version>10.15.2.0</version>
 </dependency>
 ```
@@ -107,6 +114,59 @@ Připojením knihovny "EclipseLink JPA" se zároveň v projektu aktivuje podpora
 Pokud by se tak nestalo, nebo bychom chtěli podporu perzistence aktivovat v projektu ručně, využijeme opět kontextové menu nad projektem "Books =&gt; Add Framework Support" a vybereme "JPA Persistence".
 {% endhint %}
 
+Výsledný aktuální obsah soubor `pom.xml`:
+
+{% code title="pom.xml" %}
+```markup
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>groupId</groupId>
+    <artifactId>Books</artifactId>
+    <version>1.0-SNAPSHOT</version>
+
+    <properties>
+        <maven.compiler.source>1.11</maven.compiler.source>
+        <maven.compiler.target>1.11</maven.compiler.target>
+    </properties>
+
+    <dependencies>
+        <!-- https://mvnrepository.com/artifact/javax.servlet/jstl -->
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>jstl</artifactId>
+            <version>1.2</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.apache.derby/derbyclient -->
+        <dependency>
+            <groupId>org.apache.derby</groupId>
+            <artifactId>derbyclient</artifactId>
+            <version>10.15.2.0</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.apache.derby/derbytools -->
+        <dependency>
+            <groupId>org.apache.derby</groupId>
+            <artifactId>derbytools</artifactId>
+            <version>10.15.2.0</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.eclipse.persistence/org.eclipse.persistence.jpa -->
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.jpa</artifactId>
+            <version>2.7.7</version>
+        </dependency>
+    </dependencies>
+
+</project>
+```
+{% endcode %}
+
 ### 2.3 Připojení knihoven do výsledného artefaktu
 
 {% hint style="warning" %}
@@ -121,10 +181,7 @@ Popis výstupního artefaktu nalezneme v nastavení projektu - otevřeme kontext
 
 Na výše uvedeném obrázku fialová šipka ukazuje oblast, kde jsou pložky, které jsou už umístěny **ve** výstupním artefaktu. Knihovny se umisťují do složky `WEB-INF\lib`. Oranžová šipka ukazuje na artefakty, které jsou v projektu dostupné ke vložení do výstupního artefaktu, a tedy ještě **nejsou** jeho součástí. Položky přetahujeme jednoduše myší pomocí "drag & drop".
 
-Pro připojení k DB pomocí JPA persistence je vyžadováno, aby ve výstupním artefaktu byly knihovny:
-
-* derbyclient a derbyshared - pro připojení k databázi a komunikaci se SŘBD,
-* persistence.jar - pro práci s entitami při práci s databází \(bude vysvětleno dále\).
+Pro připojení k DB pomocí JPA persistence potřebujeme ve výchozím artefaktu všechny knihovny vyjma JSTL 1.2.
 
 {% hint style="info" %}
 Pokud realizujete nějaký jednoduchý testovací projekt, máte chybu s načítáním tříd a nechcete řešit, které knihovny musí být ve výstupním artefaktu dostupné, není velkou chybou tam dát všechny, které využíváte. V produkčním prostředí se pak samozřejmě dávají pouze ty, které jsou nutné, aby se zbytečně nezvyšovala velikost instalovaného produktu.
@@ -167,6 +224,8 @@ Prvním krokem je aktivace modulu persistence ve webovém projektu, která však
 Do okna persistence se lze také dostat přes menu "View =&gt; Tool Windows =&gt; Persistence".
 {% endhint %}
 
+#### 2.4.1 Generování entit
+
 Dalším krokem bude vytvoření tzv "entit" - tříd, které reprezentují záznamy databázových tabulek. V našem případě potřebujeme entitu pro tabulku "Book". Entity si můžeme napsat sami ručně, nebo si je nechat vygenerovat. Pro generování zvolíme v okně Persistence nad libovolnou položkou kontextové menu a vybereme "Generate Persistence Mapping =&gt; By Database Schema".
 
 ![](.gitbook/assets/2-persistence-generate-open.jpg)
@@ -186,5 +245,77 @@ Následně dialog potvrdíme. Po potvrzení, zda chceme opravdu provést generov
 * v okně Persistence objeví informace o entitě BookEntity,
 * ve složce `src/main/java/cz.osu.books.db.entities`objeví soubor s třídou BookEntity.
 
-Následuje první, velmi jednouché ověření,  zda systém persistence funguje:
+#### 2.4.2 Vytvoření persistentní jednotky
+
+Dalším krokem je vytvoření persistentní jednotky - XML souboru, který definuje, jakým způsobem se bude do webová aplikace připojovat do databáze.
+
+{% hint style="info" %}
+Některé postupy generování kódu v Idea způsobí, že se potřebný soubor `persistence.xml` v projektu vytvoří sám automaticky. Postup přes Maven toto bohužel neumí, a proto jej do projektu musíme přidat ručně.
+{% endhint %}
+
+V projektu nalezneme cestu `Books\src\main\resources`, vytvoříme v ní složku `META-INF` a do ní vložíme nový soubor \(kontextové menu nad složkou, menu "New =&gt; File"\) `persistence.xml`. Daný soubor bude prázdný, proto do něj vložíme výchozí obsah pro EclipseLink JPA připojení:
+
+{% code title="persistence.xml" %}
+```markup
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence xmlns="http://java.sun.com/xml/ns/persistence" version="2.0">
+
+    <persistence-unit name="NewPersistenceUnit">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <properties>
+            <property name="eclipselink.jdbc.url" value=""/>
+            <property name="eclipselink.jdbc.driver" value=""/>
+            <property name="eclipselink.jdbc.user" value=""/>
+            <property name="eclipselink.jdbc.password" value=""/>
+        </properties>
+    </persistence-unit>
+</persistence>
+```
+{% endcode %}
+
+Dalším krokem bude připojení tohoto souboru jako persistentní jednotky do projektu - projekt tak bude vědět, že tento soubor má brát v potaz. Otevřeme znovu vlastnosti projektu \(F4 nad projektem, nebo kontextové menu nad projektem, "Open Module Settings"\), vybereme položku "Facets", označíme pod-položku "JPA". Napravo v okně vybereme tlačítko "+ =&gt; persistence.xml" a vybereme námi vytvořený soubor. 
+
+![](.gitbook/assets/2-persistence-config-add.jpg)
+
+Po potvrzení dialogu se soubor objeví v okně "Persistence".
+
+![](.gitbook/assets/2-persistence-config-view.jpg)
+
+Nyní musíme soubor upravit tak, aby byl nastaven na naše připojení k databázi. V souboru definujeme:
+
+* persistence-unit name -  název persistentní jednotky. V našem případě ji nazveme `BooksPU`.
+* provider - jméno třídy, která implementuje JPA připojení. Název této třídy souvisí s použitým JPA frameworkem. Pro náš framework EclipseLink je správnou hodnotou `org.eclipse.persistence.jpa.PersistenceProvider`.
+* Sada vlastností specifikujících připojení k databázi jako "properties":
+  * `eclipselink.jdbc.url`- je připojovací URL k databázi. Její formát je dán databází, do které se připojujeme. Pro Apache Derby je obecný formát "jdbc:derby://&lt;server&gt;/&lt;databáze&gt;", v našem případě to tedy bude `jdbc:derby://localhost:1527/booksDb`.
+  * `eclipselink.jdbc.driver`- je název třídy, která reprezentuje ovladač pro připojení k databázi. Opět se liší pro každou databázi, typicky jej naleznete na stránkách výrobce databáze. Pro Apache Derby je správnou hodnotou `org.apache.derby.jdbc.ClientDriver`.
+  * `eclipselink.jdbc.user`- uživatelské jméno pro přístup k databázi, v našem případě `sa`.
+  * `eclipselink.jdbc.password` - heslo pri přístup k databázi. Vložíte heslo, které jste specifikovali pro přístup do databáze.
+
+Výsledný upravený soubor tedy bude vypadat například takto:
+
+{% code title="persistence.xml" %}
+```markup
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence xmlns="http://java.sun.com/xml/ns/persistence" version="2.0">
+
+    <persistence-unit name="NewPersistenceUnit">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <properties>
+            <property name="eclipselink.jdbc.url" value="jdbc:derby://localhost:1527/booksdb"/>
+            <property name="eclipselink.jdbc.driver" value="org.apache.derby.jdbc.ClientDriver"/>
+            <property name="eclipselink.jdbc.user" value="sa"/>
+            <property name="eclipselink.jdbc.password" value="saHeslo"/>
+        </properties>
+    </persistence-unit>
+</persistence>
+```
+{% endcode %}
+
+Nyní je vhodné opět ověřit parciální funkcionalitu řešení.
+
+* 
+| Atribut | Hodnota | Popis |
+| :--- | :--- | :--- |
+| eclipselink.jdbc.url | jdbc:derby://&lt;server&gt;/&lt;databáze&gt; | Adresa serveru, případně port |
+| eclipselink.jdbc.driver |  |  |
 
