@@ -113,6 +113,50 @@ Pokud by se tak nestalo, nebo bychom chtěli podporu perzistence aktivovat v pro
 Problematika v této pasáži je platná obecně a nemusí se vztahovat jen k problematice připojení k databázi, ale je platná pro libovolnou knihovnu, která je přiložena do projektu.
 {% endhint %}
 
+Maven automaticky připojuje požadované závislosti/knihovny do projektu, ale automaticky se nepřidávají do výstupního artefaktu - balíčku, který se nasazuje na server a je spouštěn. Některé knihovny však musí být k dispozici i za běhu projektu, jinak program spadne s chybou - typicky s výjimkou " `ClassNotFoundException` nebo `NoClassDefFoundError`. Řešením je přidat požadované knihovny \(.jar soubory\) do výstupního artefaktu.
+
+Popis výstupního artefaktu nalezneme v nastavení projektu - otevřeme kontextové menu nad projektem a zvolíme volbu "Open Module Settings" \(klávesová zkratka F4\). V otevřeném dialogu vybereme položku "Artifact".
+
+![](.gitbook/assets/2-artifact.jpg)
+
+Na výše uvedeném obrázku fialová šipka ukazuje oblast, kde jsou pložky, které jsou už umístěny **ve** výstupním artefaktu. Knihovny se umisťují do složky `WEB-INF\lib`. Oranžová šipka ukazuje na artefakty, které jsou v projektu dostupné ke vložení do výstupního artefaktu, a tedy ještě **nejsou** jeho součástí. Položky přetahujeme jednoduše myší pomocí "drag & drop".
+
+Pro připojení k DB pomocí JPA persistence je vyžadováno, aby ve výstupním artefaktu byly knihovny:
+
+* derbyclient a derbyshared - pro připojení k databázi a komunikaci se SŘBD,
+* persistence.jar - pro práci s entitami při práci s databází \(bude vysvětleno dále\).
+
+{% hint style="info" %}
+Pokud realizujete nějaký jednoduchý testovací projekt, máte chybu s načítáním tříd a nechcete řešit, které knihovny musí být ve výstupním artefaktu dostupné, není velkou chybou tam dát všechny, které využíváte. V produkčním prostředí se pak samozřejmě dávají pouze ty, které jsou nutné, aby se zbytečně nezvyšovala velikost instalovaného produktu.
+{% endhint %}
+
+Následuje velmi jednoduché a rychlé ověření, zda systém persistence funguje. Upravíme soubor `index.jsp`do následující podoby:
+
+{% code title="index.jsp" %}
+```markup
+<%@ page import="javax.persistence.EntityManagerFactory" %>
+<%@ page import="javax.persistence.EntityManager" %>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<html>
+  <head>
+    <title>$Title$</title>
+  </head>
+  <body>
+  <%
+    EntityManagerFactory emf = 
+      javax.persistence.Persistence.createEntityManagerFactory("BooksPU");
+    EntityManager em = emf.createEntityManager();
+  %>
+  </body>
+</html>
+```
+{% endcode %}
+
+Projekt po spuštění musí hlásit chybu "javax.persistence.PersistenceException: No Persistence provider for EntityManager named BooksPU". Tato chyba znamená, že se podařilo úspěšně načíst třídu `EntityManagerFactory`.
+
+![](.gitbook/assets/2-artifact-check.jpg)
+
 ### 2.4 Nastavení persistence ve webovém projektu
 
 Prvním krokem je aktivace modulu persistence ve webovém projektu, která však již proběhla na konci předchozího bodu. Že je modul aktivován se pozná podle menu "Persistence" v levém svislém sloupci prostředí Idea. Klikem na tuto záložku se otevře podokno Persistence, kde je uvedeno \(zatím prázdné\) nastavení persistence v projektu.
@@ -142,5 +186,5 @@ Následně dialog potvrdíme. Po potvrzení, zda chceme opravdu provést generov
 * v okně Persistence objeví informace o entitě BookEntity,
 * ve složce `src/main/java/cz.osu.books.db.entities`objeví soubor s třídou BookEntity.
 
-... dopsat nahoře 2.3, už nemůžu
+Následuje první, velmi jednouché ověření,  zda systém persistence funguje:
 
