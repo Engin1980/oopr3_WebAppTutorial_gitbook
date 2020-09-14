@@ -175,7 +175,8 @@ public class BookDAO {
 
     private void initEmf() {
         try {
-            emf = javax.persistence.Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME);
+            emf = javax.persistence.Persistence
+                .createEntityManagerFactory(PERSISTENCE_UNIT_NAME);
         } catch (Exception e) {
             throw new DbException(
                     "Failed to initialize EntityManagerFactory.", e);
@@ -238,4 +239,30 @@ public class BookDAO {
 }
 ```
 {% endcode %}
+
+Nyní můžeme zkusit rychlé ověření fungování, opět s využitím souboru `index.jsp`:
+
+{% code title="index.jsp" %}
+```markup
+<%@ page import="cz.osu.books.db.BookDAO" %>
+<%@ page import="cz.osu.books.db.entities.BookEntity" %>
+<%@ page import="java.util.List" %>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<html>
+<head>
+    <title>$Title$</title>
+</head>
+<body>
+    <%
+        BookDAO bookDAO = new BookDAO();
+        List<BookEntity> books = bookDAO.getAll();
+    %>
+    Knih: <%= books.size() %>.
+</body>
+</html>
+```
+{% endcode %}
+
+Po spuštění by se měla zobrazit webová stránka vypisující počet knih v databázi. Číslo se může lišit podle toho, kolik máte záznamů v tabulce Books, nicméně stránka by neměla zobrazovat žádnou chybu.
 
