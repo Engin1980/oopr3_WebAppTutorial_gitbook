@@ -95,3 +95,147 @@ V kódu máme několik částí:
 * Funkce `getEm()` je hlavní funkcí, kterou budou operace insert/delete/... volat v případě, že potřebují pracovat s entitním manažerem. Tato funkce zajistí, že jsou objekty `emf`a `em` naplněny hodnotami. Všechny funkce kromě inicializačních funkcí **musí** pro práci s entitním manažerem využít tuto funkci, aby bylo zajištěno, že je proměnná `em` korektně naplněna. Funkce sama o sobě zkontroluje, zda jsou objekty `emf`a `em` naplněny, případně zavolá jejich inicializaci.
 * Funkce `initEmf()` a `initEm()` vytvářejí nové instance požadovaných objektů. V případě chyby vyhazují výjimku typu `DbException` vytvořenou dříve.
 
+### 3.3 Implementace poskytovaných databázových operací
+
+Pokud máme připravený výše uvedený objekt entitního manažera dostupného přes funkci `getEm()`, můžeme realizovat implementaci jednotlivých metod:
+
+{% tabs %}
+{% tab title="insert" %}
+```java
+public void insert(BookEntity book) {
+    if (book == null) throw new IllegalArgumentException("Book cannot be null.");
+    
+    EntityManager em = this.getEm();
+    em.getTransaction().begin();
+    em.persist(book);
+    em.getTransaction().commit();
+}
+```
+{% endtab %}
+
+{% tab title="delete" %}
+```java
+public void delete(int bookId) {
+    EntityManager em = this.getEm();
+    BookEntity book = em.getReference(BookEntity.class, bookId);
+    em.getTransaction().begin();
+    em.remove(book);
+    em.getTransaction().commit();
+}
+```
+{% endtab %}
+
+{% tab title="getAll" %}
+```java
+public List<BookEntity> getAll() {
+
+    EntityManager em = this.getEm();
+    TypedQuery<BookEntity> q = em
+            .createQuery(
+                "select b from BookEntity b order by b.title", 
+                BookEntity.class);
+    List<BookEntity> ret = q.getResultList();
+    return ret;
+}
+```
+{% endtab %}
+{% endtabs %}
+
+Funkce **insert\(...\)** zkontroluje, zda jí byl poslán objekt k uložení. Následně si získá instanci entitního manažera, zahájí transakci, objekt zapíše do databáze a transakci potvrdí.
+
+Funkce **delete\(...\)** získá entitního manažera, přes něj a id dále referenci na objekt, který se bude mazat \(to je nutné, protože entitní manažer potřebuje k odstranění objektu z databáze instanci entity, ne pouze její id, viz řádek 5\), zahájí transakci, vymaže objekt a transakci ukončí.
+
+Funkce **getAll\(\)** je složitější z důvodu nutnosti existence dotazu k vykonání. Funkce získá entitního manažera, přes něj následně vytvoří typový dotaz pomocí jazyka QL; z dotazu si pak už jen jednoduše stáhne výsledek jako list a ten vrátí z funkce.
+
+Výše uvedené výpisy jsou zjednoušené pro čitelnost, pro praktické použití musí být ještě všechna volání zabalena do výjimek pro případ chyby. Níže uvedený kód obsahuje úplný výpis třídy BookDAO:
+
+{% code title="BookDAO.java" %}
+```java
+package cz.osu.books.db;
+
+import cz.osu.books.db.entities.BookEntity;
+import org.eclipse.persistence.jpa.jpql.tools.model.query.MaxFunctionStateObject;
+
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.TypedQuery;
+import java.util.List;
+
+public class BookDAO {
+    //region Initialization
+    private static final String PERSISTENCE_UNIT_NAME = "BooksPU";
+    private static EntityManagerFactory emf = null;
+    private EntityManager em = null;
+
+    private EntityManager getEm() {
+        if (emf == null) initEmf();
+        if (em == null) initEm();
+        return em;
+    }
+
+    private void initEmf() {
+        try {
+            emf = javax.persistence.Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME);
+        } catch (Exception e) {
+            throw new DbException(
+                    "Failed to initialize EntityManagerFactory.", e);
+        }
+    }
+
+    private void initEm() {
+        try {
+            this.em = emf.createEntityManager();
+        } catch (Exception e) {
+            throw new DbException(
+                    "Failed to initialize EntityManager.", e);
+        }
+    }
+    //endregion
+
+    public void insert(BookEntity book) {
+        if (book == null) 
+            throw new IllegalArgumentException("Book cannot be null.");
+
+        EntityManager em = this.getEm();
+        try {
+            em.getTransaction().begin();
+            em.persist(book);
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            throw new DbException("Failed to do 'insert'.", e);
+        }
+    }
+
+    public void delete(int bookId) {
+        EntityManager em = this.getEm();
+        try {
+            BookEntity book = em.getReference(BookEntity.class, bookId);
+            em.getTransaction().begin();
+            em.remove(book);
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            if (em.getTransaction().isActive())
+                em.getTransaction().rollback();
+            throw new DbException("Failed to do 'delete' for id " + bookId, e);
+        }
+    }
+
+    public List<BookEntity> getAll() {
+        List<BookEntity> ret;
+
+        EntityManager em = this.getEm();
+        try {
+            TypedQuery<BookEntity> q = em
+                    .createQuery(
+                        "select b from BookEntity b order by b.title", 
+                        BookEntity.class);
+            ret = q.getResultList();
+        } catch (Exception e) {
+            throw new DbException("Failed to do 'getAll'.", e);
+        }
+        return ret;
+    }
+}
+```
+{% endcode %}
+

@@ -262,6 +262,7 @@ V projektu nalezneme cestu `Books\src\main\resources`, vytvoříme v ní složku
 
     <persistence-unit name="NewPersistenceUnit">
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <exclude-unlisted-classes>false</exclude-unlisted-classes>
         <properties>
             <property name="eclipselink.jdbc.url" value=""/>
             <property name="eclipselink.jdbc.driver" value=""/>
@@ -300,6 +301,7 @@ Výsledný upravený soubor tedy bude vypadat například takto:
 
     <persistence-unit name="NewPersistenceUnit">
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <exclude-unlisted-classes>false</exclude-unlisted-classes>
         <properties>
             <property name="eclipselink.jdbc.url" value="jdbc:derby://localhost:1527/booksdb"/>
             <property name="eclipselink.jdbc.driver" value="org.apache.derby.jdbc.ClientDriver"/>
@@ -310,6 +312,10 @@ Výsledný upravený soubor tedy bude vypadat například takto:
 </persistence>
 ```
 {% endcode %}
+
+{% hint style="info" %}
+Položka `<exclude-unlisted-classes>` je pro nás důležitá. Říká, jeslti chceme v persistentní jednotce později sami ručně specifikovat, se kterými třídami/entitami/tabulkami chceme pracovat, nebo zda chceme používat všechny třídy/entity/tabulky připojené do projektu. Pokud bude hodnota tohoto elementu nastavena na "true", nebo element bude v souboru úplně chybět, budeme muset do souboru `persistence.xml`sami ručně záznamy přidávat.
+{% endhint %}
 
 Nyní je vhodné opět ověřit parciální funkcionalitu řešení. Projekt spustíme \(`index.jsp` ponecháme beze změny od předchozího příkladu\). Mělo by se otevřít nové okno webového prohlížeče naší aplikace, které bude prázdné, tentokráte tedy již bez chyb. To značí, že se naše webová aplikace úspěšně připojila do databáze a můžeme začít realizovat databázové operace.
 
