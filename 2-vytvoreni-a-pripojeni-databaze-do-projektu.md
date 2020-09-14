@@ -245,6 +245,21 @@ Následně dialog potvrdíme. Po potvrzení, zda chceme opravdu provést generov
 * v okně Persistence objeví informace o entitě BookEntity,
 * ve složce `src/main/java/cz.osu.books.db.entities`objeví soubor s třídou BookEntity.
 
+{% hint style="danger" %}
+Generátor v Idea **neumí** vygenerovat Entitu korektně v případě, že obsahuje automaticky generované sloupce - v našem případě primární klíč. V tom případě je třeba informaci, že tento sloupec je generován automaticky, dopsat ručně, viz níže. Pokud v budoucnu entity přegenerujeme, tato informace se ztratí a musí být opět dopsána ručně!
+{% endhint %}
+
+Najdeme třídu/soubor `BookEntity.java` a nalezneme "get..." metodu pro získání id, `getBookid()`. Doplníme k ní atribut říkající, že sloupec je generován automaticky.
+
+```java
+@Id
+@GeneratedValue(strategy = GenerationType.IDENTITY) // <== tento řádek
+@Column(name = "BOOKID")
+public int getBookid() {
+    return bookid;
+}
+```
+
 #### 2.4.2 Vytvoření persistentní jednotky
 
 Dalším krokem je vytvoření persistentní jednotky - XML souboru, který definuje, jakým způsobem se bude do webová aplikace připojovat do databáze.
