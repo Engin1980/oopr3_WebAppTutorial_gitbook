@@ -320,14 +320,14 @@ Když je servlet hotový, na stránce `index.jsp`vytvoříme tlačítko, které 
         <td>
             <form method="post" action="deleteBook">
                 <input type="hidden" name="bookId" value="${book.bookid}"/>
-                <button type="submit">(Delete)</button>
+                <button type="submit">(Smazat)</button>
             </form>
         </td>
     </tr>
 </c:forEach>
 ```
 
-V kódu tedy vidíme, že se uvnitř cyklu `c:forEach`pro každou knížku vytváří ve sloupci `td`formulář pro smazání. Formulář se při potvrzení posílá metodou post na url`deleteBook`, pod kterou máme namapován náš servlet \(viz anotace `@WebServlet`u deklarace servletu `DeleteBook`\). Formulář se tedy při potvrzení přesměruje a pošle na tento servlet. Uvnitř formuláře je jeden prvek, který je ale skrytý \(`hidden`\), aby jej uživatel neviděl a nemohl měnit, a tento prvek se jmenuje `bookId` \(viz kód servletu, ze kterého jsme získávali parametr `bookId`\) a má nastavenou hodnotu na id knihy pomocí EL \(`${book.bookid}`\). Dále je na formuláři tlačítko na odeslání formuláře \(button typu `submit`\) s nápisem "\(Delete\)". Důležité body ještě jednou:
+V kódu tedy vidíme, že se uvnitř cyklu `c:forEach`pro každou knížku vytváří ve sloupci `td`formulář pro smazání. Formulář se při potvrzení posílá metodou post na url`deleteBook`, pod kterou máme namapován náš servlet \(viz anotace `@WebServlet`u deklarace servletu `DeleteBook`\). Formulář se tedy při potvrzení přesměruje a pošle na tento servlet. Uvnitř formuláře je jeden prvek, který je ale skrytý \(`hidden`\), aby jej uživatel neviděl a nemohl měnit, a tento prvek se jmenuje `bookId` \(viz kód servletu, ze kterého jsme získávali parametr `bookId`\) a má nastavenou hodnotu na id knihy pomocí EL \(`${book.bookid}`\). Dále je na formuláři tlačítko na odeslání formuláře \(button typu `submit`\) s nápisem "\(Smazat\)". Důležité body ještě jednou:
 
 * Formulář se posílá na náš servlet DeleteBook. Cesta uvedená v HTML formuláři `action` a v servletu pod `urlPatterns` na sebe musí pasovat.
 * Formulář se posílá metodou POST. Náš servlet tím, že obsahuje pouze metodu `onPost(...)`, je nastaven tak, aby zpracovával pouze požadavky typu POST.
@@ -340,6 +340,193 @@ Pokud v databázi nemáme žádné knihy, nic nám nebrání si tam nějaké př
 {% endhint %}
 
 ### 1.5 Přidání nové knihy
+
+Při přidání nové knihy budeme postupovat stejně jako u mazání. Nejdříve vytvoříme servlet, který bude přidání nové knihy obsluhovat, a následně vytvoříme HTML kód, který nabídne uživateli vytvoření knihy a po potvrzení bude daný servlet využívat.
+
+Nejprve tedy vytvoříme servlet. Stejným způsobem jako v předchozím případě vložíme do projektu nový servlet/třídu: servlet dáváme do balíčku `cz.osu.books.servlets`a nazveme ji `AddBook`. Do třídy vložíme anotaci `@WebServlet` s parametrem `urlPattern` tak, aby se na servlet dalo směrovat cestou `.../addBook`.  Následně překryjeme opět metodu `onPost(...)` a doplníme do ní kód:
+
+{% code title="AddServlet.java" %}
+```java
+package cz.osu.books.servlets;
+
+import cz.osu.books.app.BookService;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+
+@WebServlet(name = "addBookServlet", urlPatterns = {"/addBook"})
+public class AddBook extends HttpServlet {
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
+
+        String author = req.getParameter("author");
+        String title = req.getParameter("title");
+
+        BookService bookService = new BookService();
+        bookService.create(title, author, 2);
+
+        resp.sendRedirect("index.jsp");
+    }
+}
+```
+{% endcode %}
+
+Ve funkci `doPost(...)` nejdříve načteme zadané parametry z formuláře, následně vytvoříme službu `BookService` a s její pomocí uložíme novou knihu \(**poznámka:** pro zjednodušení nastavujeme hodnotu ratingu nové knihy fixně na 2. Můžete samostatně úkol doplnit tak, aby se i tato hodnota dala zadat z formuláře.\). Nakonec provedeme přesměrování na výchozí stránku.
+
+Dalším krokem bude úprava HTML kódu stránky `index.jsp`. Pod stávající tabulku \(tj. za ukončení elementu `</table>`  doplníme kód pro vytvoření formuláře:
+
+```markup
+<h3>Přidání nové knihy</h3>
+<form method="post" action="/addBook">
+    <label for="title">Název: </label>
+    <input name="title" id="title" type="text" maxlength="64" />
+    <br />
+    <label for="author">Autor: </label>
+    <input name="author" id="author" type="text" maxlength="256" />
+    <br />
+    <button type="submit">Uložit novou knihu</button>
+</form>
+```
+
+Formulář obsahuje dvě vstupní pole - `title` pro název knihy a `author` pro jméno autora. U prvků se využilo i vlastnosti `max-length`, která byla nastavena podle hodnot z databáze a je to další úrověn zabezpečení, aby do databáze nevstupovala příliš dlouhá data. Formulář se odesílá tlačítkem jako HTTP-POST na adresu `/addBook`.
+
+Nyní můžeme obnovit stránku a vyzkoušet chování.
+
+Pro úplnost kompletní kód:
+
+{% tabs %}
+{% tab title="index.jsp" %}
+{% code title="index.jsp" %}
+```markup
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<jsp:useBean id="bookService" class="cz.osu.books.app.BookService" scope="request"/>
+<html>
+<head>
+    <title>Přehled knih</title>
+    <link type="text/css" rel="stylesheet" href="resources/books.css">
+</head>
+<body>
+<table>
+    <tr>
+        <th>Název knihy</th>
+        <th>Autor knihy</th>
+        <th>Hodnocení</th>
+    </tr>
+    <c:forEach var="book" items="${bookService.all}">
+        <tr>
+            <td>${book.title}</td>
+            <td>${book.author}</td>
+            <td>
+                <c:forEach var="i" begin="0" end="10" step="1">
+                    <c:choose>
+                        <c:when test="${i <= book.rating}">
+                            <div class="rating ratingOn"></div>
+                        </c:when>
+                        <c:otherwise>
+                            <div class="rating ratingOff"></div>
+                        </c:otherwise>
+                    </c:choose>
+                </c:forEach>
+            </td>
+            <td>
+                <form method="post" action="deleteBook">
+                    <input type="hidden" name="bookId" value="${book.bookid}"/>
+                    <button type="submit">(Smazat)</button>
+                </form>
+            </td>
+        </tr>
+    </c:forEach>
+</table>
+<h3>Přidání nové knihy</h3>
+<form method="post" action="/addBook">
+    <label for="title">Název: </label>
+    <input name="title" id="title" type="text" maxlength="64"/>
+    <br/>
+    <label for="author">Autor: </label>
+    <input name="author" id="author" type="text" maxlength="256"/>
+    <br/>
+    <button type="submit">Uložit novou knihu</button>
+</form>
+</body>
+</html>
+
+```
+{% endcode %}
+{% endtab %}
+
+{% tab title="AddBook" %}
+{% code title="AddBook.java" %}
+```
+package cz.osu.books.servlets;
+
+import cz.osu.books.app.BookService;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+
+@WebServlet(name = "addBookServlet", urlPatterns = {"/addBook"})
+public class AddBook extends HttpServlet {
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
+
+        String author = req.getParameter("author");
+        String title = req.getParameter("title");
+
+        BookService bookService = new BookService();
+        bookService.create(title, author, 2);
+
+        resp.sendRedirect("index.jsp");
+    }
+}
+
+```
+{% endcode %}
+{% endtab %}
+
+{% tab title="books.css" %}
+{% code title="books.css" %}
+```css
+body{
+    font-family: "Verdana";
+    background-color: linen;
+}
+
+div.rating{
+    width:16px;
+    height:16px;
+    display: inline-block;
+}
+
+div.ratingOn{
+    background-image: url('starOn.png');
+}
+
+div.ratingOff{
+    background-image: url('starOff.png');
+}
+
+label{
+    width: 100px;
+    display: inline-block;
+}
+
+```
+{% endcode %}
+{% endtab %}
+{% endtabs %}
+
+
 
 
 
