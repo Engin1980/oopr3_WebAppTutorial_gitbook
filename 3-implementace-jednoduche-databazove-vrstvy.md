@@ -37,7 +37,7 @@ public class BookDAO {
 ```
 {% endcode %}
 
-### 3.1 Vytvoření podpůrné třídy - Výjimky - pro zpracování chyb
+## 1 Vytvoření podpůrné třídy - Výjimky - pro zpracování chyb
 
 Před samotnou implementací ještě vytvoříme pomocnou třídu - výjimku, kterou bude naše DAO třída vyhazovat v případě jakékoliv chyby. Abychom nemuseli pracovat s principem kontrolovaných výjimek v Javě, využijeme potomka `RuntimeException`. Třídu pojmenujeme `DbException`a připojíme jí také konstruktor pro její snažší použití. Její úplný kód bude:
 
@@ -53,7 +53,7 @@ public class DbException extends RuntimeException {
 ```
 {% endcode %}
 
-### 3.2 Vytvoření interní logiky pro práci ve třídě BookDAO
+## 2 Vytvoření interní logiky pro práci ve třídě BookDAO
 
 instance třídy BookDAO pro svou práci potřebuje instanci třídy EntityManager, přes kterého bude provádět operace s databází. Aby každá operace insert/delete/... nemusela tuto problematiku řešit samostatně, přípravu a tvorbu entitního manažera `em` vytvoříme pomocí několika metod, které posléze budeme volat v každé z operací:
 
@@ -95,7 +95,7 @@ V kódu máme několik částí:
 * Funkce `getEm()` je hlavní funkcí, kterou budou operace insert/delete/... volat v případě, že potřebují pracovat s entitním manažerem. Tato funkce zajistí, že jsou objekty `emf`a `em` naplněny hodnotami. Všechny funkce kromě inicializačních funkcí **musí** pro práci s entitním manažerem využít tuto funkci, aby bylo zajištěno, že je proměnná `em` korektně naplněna. Funkce sama o sobě zkontroluje, zda jsou objekty `emf`a `em` naplněny, případně zavolá jejich inicializaci.
 * Funkce `initEmf()` a `initEm()` vytvářejí nové instance požadovaných objektů. V případě chyby vyhazují výjimku typu `DbException` vytvořenou dříve.
 
-### 3.3 Implementace poskytovaných databázových operací
+## 3 Implementace poskytovaných databázových operací
 
 Pokud máme připravený výše uvedený objekt entitního manažera dostupného přes funkci `getEm()`, můžeme realizovat implementaci jednotlivých metod:
 

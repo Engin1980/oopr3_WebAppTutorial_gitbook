@@ -22,7 +22,7 @@ public class BookService {
 
 Všimněme si rozdílu oproti metodám BookDAO. Metody v BookService nabízejí stejné operace, ale na jiné úrovni - zejména je to patrné u funkce `create(...)`, kde se už nepracuje s objektem BookEntity, ale přímo se samotnými hodnotami.
 
-Protože naše třída BookService bude obsahovat pouze základní operace, její kód bude triviální:
+Protože naše třída BookService bude obsahovat pouze základní operace, její kód bude triviální \(kontrolu vstupů doplníme v úplném výpisu kódu\):
 
 {% tabs %}
 {% tab title="\(inicializace\)" %}
@@ -76,7 +76,7 @@ Funkce **delete** jen přebere hodnotu parametru a předává ji ke smazání do
 
 Funkce **getAll** podobně jen načte hodnoty z databáze a vrátí je z funkce.
 
-Rychlou kontrolu funkce opět provedeme přes `index.jsp` drobnou úpravou kódu:
+Rychlou kontrolu funkce opět provedeme přes `index.jsp` drobnou úpravou kódu,  zobrazujeme i úplný obsah BookService doplněný o kontroly vstupů:
 
 {% tabs %}
 {% tab title="index.jsp" %}
@@ -123,6 +123,12 @@ public class BookService {
     }
 
     public BookEntity create(String title, String author, double rating) {
+        if (title == null || title.trim().length() == 0)
+            throw new IllegalArgumentException("Title cannot be null or empty.");
+        if (author == null || author.trim().length() == 0)
+            throw new IllegalArgumentException("Author cannot be null.");
+        if (rating < 0 || rating > 10)
+            throw new IllegalArgumentException("Rating must be between 0 and 10.");
         BookEntity book = new BookEntity();
         book.setTitle(title);
         book.setAuthor(author);
