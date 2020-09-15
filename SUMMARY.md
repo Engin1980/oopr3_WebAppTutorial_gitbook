@@ -16,3 +16,7 @@
 * [4 Implementace jednoduché aplikační vrstvy](jsp-+-jstl-+-maven-+-apache-derby/4-implementace-jednoduche-aplikacni-vrstvy.md)
 * [5 Implementace jednoduché prezentační vrstvy](jsp-+-jstl-+-maven-+-apache-derby/5-implementace-jednoduche-prezentacni-vrstvy.md)
 
+## Ostatní
+
+* [Install Idea+Jetty+Derby on Ubuntu](ostatni/install-idea+jetty+derby-on-ubuntu.md)
+
