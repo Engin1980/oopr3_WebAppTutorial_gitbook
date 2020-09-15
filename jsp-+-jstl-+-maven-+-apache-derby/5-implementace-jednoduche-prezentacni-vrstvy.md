@@ -382,7 +382,7 @@ Dalším krokem bude úprava HTML kódu stránky `index.jsp`. Pod stávající t
 
 ```markup
 <h3>Přidání nové knihy</h3>
-<form method="post" action="/addBook">
+<form method="post" action="addBook">
     <label for="title">Název: </label>
     <input name="title" id="title" type="text" maxlength="64" />
     <br />
@@ -393,7 +393,7 @@ Dalším krokem bude úprava HTML kódu stránky `index.jsp`. Pod stávající t
 </form>
 ```
 
-Formulář obsahuje dvě vstupní pole - `title` pro název knihy a `author` pro jméno autora. U prvků se využilo i vlastnosti `max-length`, která byla nastavena podle hodnot z databáze a je to další úrověn zabezpečení, aby do databáze nevstupovala příliš dlouhá data. Formulář se odesílá tlačítkem jako HTTP-POST na adresu `/addBook`.
+Formulář obsahuje dvě vstupní pole - `title` pro název knihy a `author` pro jméno autora. U prvků se využilo i vlastnosti `max-length`, která byla nastavena podle hodnot z databáze a je to další úrověn zabezpečení, aby do databáze nevstupovala příliš dlouhá data. Formulář se odesílá tlačítkem jako HTTP-POST na adresu `addBook`.
 
 Nyní můžeme obnovit stránku a vyzkoušet chování.
 
