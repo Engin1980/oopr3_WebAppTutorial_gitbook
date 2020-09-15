@@ -4,7 +4,7 @@ Funkcí aplikační vrstvy je převzít požadavek od nadřazené \(typicky prez
 
 Jednoduchý diagram ukazující spolupráci s UI - prezentační vrstvou - a databázovou vrstvou následuje a na první pohled je vidět, že základní princip je identický s principem uvedeným v předchozí kapitole:
 
-![](.gitbook/assets/4-app-logic.png)
+![](../.gitbook/assets/4-app-logic.png)
 
 Co je důležité si povšimnout, že diagram dále nepokračuje na nižší úroveň než "BookDAO" - a to kvůli princpiu zapouzdření a abstrakce. Nám, na úrovni aplikační vrstvy, je jedno, jakým způsobem si třída BookDAO řeší problematiku ukládání/načítání dat. Využíváme ji pouze jako zprostředkovatele dané funkcionality.
 

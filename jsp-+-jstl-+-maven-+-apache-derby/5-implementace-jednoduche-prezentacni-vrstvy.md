@@ -233,7 +233,7 @@ div.ratingOff{
 {% endtab %}
 {% endtabs %}
 
-![](.gitbook/assets/5-rating.jpg)
+![](../.gitbook/assets/5-rating.jpg)
 
 ### 1.4 Mazání knihy
 

@@ -6,7 +6,7 @@ Nejdříve vysvětlíme základní princip fungování databázové vrstvy \(viz
 2. BookDAO požadavek zpracuje, předpřipraví si data \(je-li to třeba\) a následně požadavek předá níže objektu "EntityManager". EntityManager je implementován v JPA a my jen budeme využívat jeho hotové funkcionality.
 3. EntityManager nám vrátí data. BookDAO je opět zpracuje, je-li třeba, a výsledek vrací volajícímu objektu.
 
-![](.gitbook/assets/3-schema.png)
+![](../.gitbook/assets/3-schema.png)
 
 {% hint style="info" %}
 V kontextu této vrstvy budeme pracovat se dvěma typy třídy - DAO \(data access object\) bude třídou, která poskytuje operace s danou entitou. DAO je typicky postfixem třídy, kdy prefixem je název tabulky \(například BookDAO, UserDAO, AuthorDAO\). Dnes má tato třída také postfíx Repository \(BookRepository, UserRepository atd\). Každá entita má vlastní DAO objekt.

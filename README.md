@@ -1,2 +1,2 @@
-# Úvodní informace k tutorialu
+# Úvodní informace
 

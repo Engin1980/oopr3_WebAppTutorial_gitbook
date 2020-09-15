@@ -29,7 +29,7 @@ create table Book(
 
 Po vytvoření by se nám v prostředí Idea měla v databázovém okně v daném připojení ukázat vytvořená databázová tabulka:
 
-![](.gitbook/assets/2-db-created.jpg)
+![](../.gitbook/assets/2-db-created.jpg)
 
 Pomocí SQL do tabulky vložíme nějaká data a necháme si je vypsat/zobrazit:
 
@@ -48,7 +48,7 @@ select * from Book
 Všimněme si, že v SQL explicitně řikáme, do kterých sloupců chceme data vložit. Je to proto, že nemůžeme \(jednoduše\) vkládat data do sloupce `BookId`, který je nastavován automaticky. Nemůžeme proto použít jednodušší zápis `insert into Book values (...)`.
 {% endhint %}
 
-![](.gitbook/assets/2-db-data-inserted.jpg)
+![](../.gitbook/assets/2-db-data-inserted.jpg)
 
 ## 2 Připojení DB do webového projektu
 
@@ -177,7 +177,7 @@ Maven automaticky připojuje požadované závislosti/knihovny do projektu, ale 
 
 Popis výstupního artefaktu nalezneme v nastavení projektu - otevřeme kontextové menu nad projektem a zvolíme volbu "Open Module Settings" \(klávesová zkratka F4\). V otevřeném dialogu vybereme položku "Artifact".
 
-![](.gitbook/assets/2-artifact.jpg)
+![](../.gitbook/assets/2-artifact.jpg)
 
 Na výše uvedeném obrázku fialová šipka ukazuje oblast, kde jsou pložky, které jsou už umístěny **ve** výstupním artefaktu. Knihovny se umisťují do složky `WEB-INF\lib`. Oranžová šipka ukazuje na artefakty, které jsou v projektu dostupné ke vložení do výstupního artefaktu, a tedy ještě **nejsou** jeho součástí. Položky přetahujeme jednoduše myší pomocí "drag & drop".
 
@@ -212,13 +212,13 @@ Následuje velmi jednoduché a rychlé ověření, zda systém persistence fungu
 
 Projekt po spuštění musí hlásit chybu "javax.persistence.PersistenceException: No Persistence provider for EntityManager named BooksPU". Tato chyba znamená, že se podařilo úspěšně načíst třídu `EntityManagerFactory`.
 
-![](.gitbook/assets/2-artifact-check.jpg)
+![](../.gitbook/assets/2-artifact-check.jpg)
 
 ### 2.4 Nastavení persistence ve webovém projektu
 
 Prvním krokem je aktivace modulu persistence ve webovém projektu, která však již proběhla na konci předchozího bodu. Že je modul aktivován se pozná podle menu "Persistence" v levém svislém sloupci prostředí Idea. Klikem na tuto záložku se otevře podokno Persistence, kde je uvedeno \(zatím prázdné\) nastavení persistence v projektu.
 
-![](.gitbook/assets/2-persistence-empty.jpg)
+![](../.gitbook/assets/2-persistence-empty.jpg)
 
 {% hint style="info" %}
 Do okna persistence se lze také dostat přes menu "View =&gt; Tool Windows =&gt; Persistence".
@@ -228,7 +228,7 @@ Do okna persistence se lze také dostat přes menu "View =&gt; Tool Windows =&gt
 
 Dalším krokem bude vytvoření tzv "entit" - tříd, které reprezentují záznamy databázových tabulek. V našem případě potřebujeme entitu pro tabulku "Book". Entity si můžeme napsat sami ručně, nebo si je nechat vygenerovat. Pro generování zvolíme v okně Persistence nad libovolnou položkou kontextové menu a vybereme "Generate Persistence Mapping =&gt; By Database Schema".
 
-![](.gitbook/assets/2-persistence-generate-open.jpg)
+![](../.gitbook/assets/2-persistence-generate-open.jpg)
 
 V otevřeném dialogovém okně nastavujeme, jak a dle čeho se mají entity generovat. Nastavíme:
 
@@ -238,7 +238,7 @@ V otevřeném dialogovém okně nastavujeme, jak a dle čeho se mají entity gen
 * V "Database Schema Mapping" zaškrteneme požadované tabulky - po nás tedy tabulku "Books".
 * Dole necháme ještě zaškrtnutou položku "Generate JPA Annotations" - v dřívějších verzích Javy se potřebné anotace \(tj. informace co odkud z DB se načítá ze které tabulky/sloupce\) ukládalo do externího XML souboru. Aktuálně je vhodnější mít tyto anotace přímo v kódu třídy.
 
-![](.gitbook/assets/2-persistence-generate-set.jpg)
+![](../.gitbook/assets/2-persistence-generate-set.jpg)
 
 Následně dialog potvrdíme. Po potvrzení, zda chceme opravdu provést generování se nás Idea ještě může zeptat, zda chceme třídy uložit do sekce "src/main" - zdrojové kódy, nebo "src/test" pro testování. Vybíráme `src/main/...`. Po potvrzení se:
 
@@ -291,11 +291,11 @@ V projektu nalezneme cestu `Books\src\main\resources`, vytvoříme v ní složku
 
 Dalším krokem bude připojení tohoto souboru jako persistentní jednotky do projektu - projekt tak bude vědět, že tento soubor má brát v potaz. Otevřeme znovu vlastnosti projektu \(F4 nad projektem, nebo kontextové menu nad projektem, "Open Module Settings"\), vybereme položku "Facets", označíme pod-položku "JPA". Napravo v okně vybereme tlačítko "+ =&gt; persistence.xml" a vybereme námi vytvořený soubor. 
 
-![](.gitbook/assets/2-persistence-config-add.jpg)
+![](../.gitbook/assets/2-persistence-config-add.jpg)
 
 Po potvrzení dialogu se soubor objeví v okně "Persistence".
 
-![](.gitbook/assets/2-persistence-config-view.jpg)
+![](../.gitbook/assets/2-persistence-config-view.jpg)
 
 Nyní musíme soubor upravit tak, aby byl nastaven na naše připojení k databázi. V souboru definujeme:
 
