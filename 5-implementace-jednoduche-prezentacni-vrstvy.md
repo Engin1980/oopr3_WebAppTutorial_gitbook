@@ -309,14 +309,37 @@ public class DeleteBook extends HttpServlet {
 ```
 {% endcode %}
 
-Když je servlet hotový, na stránce `index.jsp`vytvoříme tlačítko, které tento servlet zavolá. Protože chceme volání servletu realizovat jako HTTP-POSt požadavek, potřebujeme ve stránce vytvořit formuláře \(pro každou knihu jeden\), kde nastavíme požadovaní ID knihy ke smazání a tlačítko pro odeslání formuláře - vše jako další sloupec každého řádku tabulky:
+Povšimněte si názvu parametru `bookId`. Je důležitý, za malou chvilku se mu budeme věnovat.
+
+Když je servlet hotový, na stránce `index.jsp`vytvoříme tlačítko, které tento servlet zavolá. Protože chceme volání servletu realizovat jako HTTP-POST požadavek, potřebujeme ve stránce vytvořit formuláře \(pro každou knihu jeden\), kde nastavíme požadovaní ID knihy ke smazání a tlačítko pro odeslání formuláře - vše jako další sloupec každého řádku tabulky:
 
 ```markup
-<td>
-    <form method="post" action="deleteBook">
-        <input type="hidden"value="${book.bookid}" />
-        <button type="submit">(Delete)</button>
-    </form>
-</td>
+<c:forEach var="book" items="${bookService.all}">
+    <tr>
+        ...
+        <td>
+            <form method="post" action="deleteBook">
+                <input type="hidden" name="bookId" value="${book.bookid}"/>
+                <button type="submit">(Delete)</button>
+            </form>
+        </td>
+    </tr>
+</c:forEach>
 ```
+
+V kódu tedy vidíme, že se uvnitř cyklu `c:forEach`pro každou knížku vytváří ve sloupci `td`formulář pro smazání. Formulář se při potvrzení posílá metodou post na url`deleteBook`, pod kterou máme namapován náš servlet \(viz anotace `@WebServlet`u deklarace servletu `DeleteBook`\). Formulář se tedy při potvrzení přesměruje a pošle na tento servlet. Uvnitř formuláře je jeden prvek, který je ale skrytý \(`hidden`\), aby jej uživatel neviděl a nemohl měnit, a tento prvek se jmenuje `bookId` \(viz kód servletu, ze kterého jsme získávali parametr `bookId`\) a má nastavenou hodnotu na id knihy pomocí EL \(`${book.bookid}`\). Dále je na formuláři tlačítko na odeslání formuláře \(button typu `submit`\) s nápisem "\(Delete\)". Důležité body ještě jednou:
+
+* Formulář se posílá na náš servlet DeleteBook. Cesta uvedená v HTML formuláři `action` a v servletu pod `urlPatterns` na sebe musí pasovat.
+* Formulář se posílá metodou POST. Náš servlet tím, že obsahuje pouze metodu `onPost(...)`, je nastaven tak, aby zpracovával pouze požadavky typu POST.
+* Parametr, který chceme předávat do servletu, musíme v HTML formuláři pojmenovat pomocí vlastnosti `name`. 
+
+Nyní můžeme funkcionalitu vyzkoušet.
+
+{% hint style="info" %}
+Pokud v databázi nemáme žádné knihy, nic nám nebrání si tam nějaké přidat. Nemáme sice zatím funkcionalitu na přidání knihy, ale můžeme využít přímo okna konzole nad datovým zdrojem, které nabíz prostředí Idea - viz postup vytváření databáze.
+{% endhint %}
+
+### 1.5 Přidání nové knihy
+
+
 
