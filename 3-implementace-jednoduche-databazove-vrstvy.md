@@ -1,6 +1,6 @@
 # 3 Implementace jednoduché databázové vrstvy
 
-Nejdříve vysvětlíme základní princip fungování databázové vrstvy \(viz obrázek níže\):
+Nejdříve vysvětlíme základní princip fungování databázové vrstvy \(viz obrázek níže, BO reprezentuje  nadřazenou vrstvu\):
 
 1. Někdo \(vyšší vrstva\) pošle požadavek, že potřebuje realizovat nějakou operaci s databází \(načtení/uložení dat\). Tyto požadavky zasílá výhradně a pouze DAO objektu, u nás "BookDAO".
 2. BookDAO požadavek zpracuje, předpřipraví si data \(je-li to třeba\) a následně požadavek předá níže objektu "EntityManager". EntityManager je implementován v JPA a my jen budeme využívat jeho hotové funkcionality.
@@ -9,7 +9,7 @@ Nejdříve vysvětlíme základní princip fungování databázové vrstvy \(viz
 ![](.gitbook/assets/3-schema.png)
 
 {% hint style="info" %}
-V kontextu této vrstvy budeme pracovat se dvěma typy třídy - DAO \(data access object\) bude třídou, která poskytuje operace s danou entitou. DAO je typicky postfixem třídy, kdy prefixem je název tabulky \(například BookDAO, UserDAO, AuthorDAO\). Dnes má tato třída také postfíx Persistence \(BookPersistence, UserPersistence atd\). Každá entita má vlastn DAO objekt.
+V kontextu této vrstvy budeme pracovat se dvěma typy třídy - DAO \(data access object\) bude třídou, která poskytuje operace s danou entitou. DAO je typicky postfixem třídy, kdy prefixem je název tabulky \(například BookDAO, UserDAO, AuthorDAO\). Dnes má tato třída také postfíx Repository \(BookRepository, UserRepository atd\). Každá entita má vlastní DAO objekt.
 
 Obdobně, třída, která nám bude reprezentovat záznamy z tabulky, má název složený z názvu tabulky a příponou Entity. Takovým třídám říkáme _entity_.
 
@@ -147,8 +147,10 @@ Funkce **delete\(...\)** získá entitního manažera, přes něj a id dále ref
 
 Funkce **getAll\(\)** je složitější z důvodu nutnosti existence dotazu k vykonání. Funkce získá entitního manažera, přes něj následně vytvoří typový dotaz pomocí jazyka QL; z dotazu si pak už jen jednoduše stáhne výsledek jako list a ten vrátí z funkce.
 
-Výše uvedené výpisy jsou zjednoušené pro čitelnost, pro praktické použití musí být ještě všechna volání zabalena do výjimek pro případ chyby. Níže uvedený kód obsahuje úplný výpis třídy BookDAO:
+Výše uvedené výpisy jsou zjednoušené pro čitelnost, pro praktické použití musí být ještě všechna volání zabalena do výjimek pro případ chyby. Níže uvedený kód obsahuje úplný výpis tříd BookDAO a BookEntity:
 
+{% tabs %}
+{% tab title="BookDAO" %}
 {% code title="BookDAO.java" %}
 ```java
 package cz.osu.books.db;
@@ -239,6 +241,86 @@ public class BookDAO {
 }
 ```
 {% endcode %}
+{% endtab %}
+
+{% tab title="BookEntity" %}
+{% code title="BookEntity.java" %}
+```java
+package cz.osu.books.db.entities;
+
+import javax.persistence.*;
+import java.util.Objects;
+
+@Entity
+@Table(name = "BOOK", schema = "SA", catalog = "")
+public class BookEntity {
+    private int bookid;
+    private String title;
+    private String author;
+    private double rating;
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "BOOKID")
+    public int getBookid() {
+        return bookid;
+    }
+
+    public void setBookid(int bookid) {
+        this.bookid = bookid;
+    }
+
+    @Basic
+    @Column(name = "TITLE")
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    @Basic
+    @Column(name = "AUTHOR")
+    public String getAuthor() {
+        return author;
+    }
+
+    public void setAuthor(String author) {
+        this.author = author;
+    }
+
+    @Basic
+    @Column(name = "RATING")
+    public double getRating() {
+        return rating;
+    }
+
+    public void setRating(double rating) {
+        this.rating = rating;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        BookEntity that = (BookEntity) o;
+        return bookid == that.bookid &&
+                Double.compare(that.rating, rating) == 0 &&
+                Objects.equals(title, that.title) &&
+                Objects.equals(author, that.author);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(bookid, title, author, rating);
+    }
+}
+
+```
+{% endcode %}
+{% endtab %}
+{% endtabs %}
 
 Nyní můžeme zkusit rychlé ověření fungování, opět s využitím souboru `index.jsp`:
 
