@@ -23,5 +23,5 @@
 
 ---
 
-* [Jetty + CSS problém](jettymappingopened.md)
+* [Jetty + CSS redeploy problém](jettymappingopened.md)
 
