@@ -21,3 +21,7 @@
 * [Install Idea+Jetty+Derby on Ubuntu](ostatni/install-idea+jetty+derby-on-ubuntu.md)
 * [PlantUML to IntelliJ IDEA](ostatni/plantuml-to-intellij-idea.md)
 
+---
+
+* [Jetty + CSS problém](jettymappingopened.md)
+
